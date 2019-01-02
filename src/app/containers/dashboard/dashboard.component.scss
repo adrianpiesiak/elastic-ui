@@ -1,0 +1,18 @@
+@import '~src/mixins.scss';
+
+mat-grid-tile {
+  border: 3px solid #8d64d3;
+  background: #673ab7;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+}
+
+mat-grid-tile:hover {
+  background: #683ab7c5;
+}
+
+mat-icon {
+  @include md-icon-size(48px);
+}

@@ -1,0 +1,49 @@
+<div class="container">
+  <!--
+    <div class="row mt-2">
+      <div class="col">
+        <button class="btn btn-secondary" (click)="getTopHighestSalaries()">
+          Top 3 salaries
+        </button>
+        <i style="font-size: 48px" class="material-icons">accessibility_new</i>
+      </div>
+    </div>
+  -->
+  <form [formGroup]="searchForm">
+    <div class="row mt-2">
+      <mat-form-field class="col">
+        <input
+          matInput
+          [matAutocomplete]="auto"
+          type="text"
+          formControlName="name"
+        />
+        <mat-autocomplete
+          #auto="matAutocomplete"
+          [displayWith]="selectedUserFn"
+        >
+          <mat-option *ngFor="let option of options" [value]="option">
+            <div [innerHTML]="getEmployeeNameAndSurname(option)"></div>
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+      <div class="col-1">
+        <button
+          [disabled]="!searchValid"
+          class="btn btn-lg btn-primary"
+          (click)="loadEmploymentHistory(searchForm.get('name').value)"
+        >
+          Show Records
+        </button>
+      </div>
+    </div>
+
+    <div class="row" [ngSwitch]="loading">
+      <app-employment-list
+        *ngSwitchCase="false"
+        [employments]="employments"
+      ></app-employment-list>
+      <mat-spinner *ngSwitchCase="true" style="margin: auto"></mat-spinner>
+    </div>
+  </form>
+</div>

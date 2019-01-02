@@ -1,0 +1,9 @@
+<div>
+  <app-department-list
+    [departments]="departments$ | async"
+  ></app-department-list>
+
+  <h1 *ngIf="(loading$ | async)">LOADING</h1>
+
+  <app-employees-list [employees]="employees$ | async"></app-employees-list>
+</div>

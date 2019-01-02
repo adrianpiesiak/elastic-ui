@@ -1,0 +1,38 @@
+<table
+  *ngIf="employments && employments.length > 0"
+  mat-table
+  [dataSource]="employments"
+>
+  <ng-container matColumnDef="department">
+    <th mat-header-cell *matHeaderCellDef>Department</th>
+    <td mat-cell *matCellDef="let employment">{{ employment.dept_name }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="dateFrom">
+    <th mat-header-cell *matHeaderCellDef>From</th>
+    <td mat-cell *matCellDef="let employment">
+      {{ employment.from_date | date }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="dateTo">
+    <th mat-header-cell *matHeaderCellDef>To</th>
+    <td mat-cell *matCellDef="let employment">
+      {{ employment.to_date | date }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="salary">
+    <th mat-header-cell *matHeaderCellDef>Salary</th>
+    <td mat-cell *matCellDef="let employment">
+      {{ employment.salary | currency }}
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+  <tr mat-row *matRowDef="let row; columns: columnsToDisplay"></tr>
+</table>
+
+<div *ngIf="employments && employments.length === 0">
+  <i>No work data found</i>
+</div>
