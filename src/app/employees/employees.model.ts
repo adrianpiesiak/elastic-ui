@@ -3,4 +3,5 @@ export class Employee {
   last_name: string;
   emp_no: number;
   salary: number;
+  num: number;
 }

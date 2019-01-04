@@ -7,6 +7,7 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class EmployeesListComponent implements OnInit {
   @Input() employees: any[];
+  readonly columnsToDisplay = ['firstName', 'lastName', 'salary'];
   constructor() {}
 
   ngOnInit() {}

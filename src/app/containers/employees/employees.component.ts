@@ -1,9 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { Employee } from 'src/app/employees/employees.model';
 import { FormGroup, FormBuilder } from '@angular/forms';
-import { EmployeesService } from 'src/app/employees/employees.service';
 import { debounceTime, switchMap } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { of, Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { State } from './../../store/employees/reducer';
+import * as Actions from './../../store/employees/actions';
+import {
+  selectSuggestions,
+  selectEmployments,
+  selectEmploymentsLoading,
+  selectPhrase
+} from 'src/app/store/employees/selectors';
 
 @Component({
   selector: 'app-employees',
@@ -11,50 +19,54 @@ import { of } from 'rxjs';
   styleUrls: ['./employees.component.scss']
 })
 export class EmployeesComponent implements OnInit {
-  options: Employee[] = [];
-  employments: Employee[] = [];
-  loading = false;
+  options$: Observable<Employee[]>;
+  employments$: Observable<any>;
+  // employments$: Observable<Employee[]>;
+  employmentsLoading$: Observable<boolean>;
+  searchPhrase = '';
 
   searchForm: FormGroup;
-  constructor(
-    private employeesService: EmployeesService,
-    private fb: FormBuilder
-  ) {}
+  constructor(private fb: FormBuilder, private store: Store<State>) {
+    this.store.select(selectPhrase).subscribe(value => {
+      this.searchPhrase = value;
+      console.log(`selecting: ${value}`);
+    });
+  }
 
   ngOnInit() {
     this.searchForm = this.fb.group({
-      name: ''
+      name: this.searchPhrase
     });
+
+    this.options$ = this.store.select(selectSuggestions);
+    this.options$.subscribe(x => console.log(x));
+    this.employments$ = this.store.select(selectEmployments);
+
+    this.employments$.subscribe(x => console.log(x));
+
+    this.employmentsLoading$ = this.store.select(selectEmploymentsLoading);
 
     this.searchForm
       .get('name')
-      .valueChanges.pipe(
-        debounceTime(500),
-        switchMap(value => {
-          if (typeof value === 'string') {
-            return this.employeesService.searchByName(value);
-          }
-          return of([]);
-        })
-      )
-      .subscribe(data => {
-        this.options = data as Employee[];
+      .valueChanges.pipe(debounceTime(500))
+      .subscribe(value => {
+        if (typeof value === 'string') {
+          this.store.dispatch(new Actions.EmployeeSearch(value));
+        }
       });
   }
 
   selectedUserFn(user: any): string {
-    if (user) {
+    if (user && typeof user === 'object') {
       return user.first_name + ' ' + user.last_name;
+    } else if (user) {
+      return user;
     }
-    return 'None selected';
+    return '';
   }
 
   loadEmploymentHistory(user: Employee) {
-    this.loading = true;
-    this.employeesService.getEmployments(user.emp_no).subscribe(data => {
-      this.employments = data;
-      this.loading = false;
-    });
+    this.store.dispatch(new Actions.LoadEmploymentHistory(user.emp_no));
   }
 
   get searchValid(): boolean {
@@ -63,6 +75,9 @@ export class EmployeesComponent implements OnInit {
   }
 
   getEmployeeNameAndSurname(employee: any) {
+    if (typeof employee === 'string') {
+      return employee;
+    }
     const name = employee.first_name + ' ' + employee.last_name;
     const pattern = this.searchForm.get('name').value;
     return name.replace(pattern, `<b>${pattern}</b>`);

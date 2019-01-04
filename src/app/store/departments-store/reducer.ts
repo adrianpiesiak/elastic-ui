@@ -1,83 +1,61 @@
 import * as Dashboard from './actions';
+import * as Loadable from '../loadable';
+import { loadableBasicReducer } from '../loadable';
+import { createEntityAdapter } from '@ngrx/entity';
 
 export interface State {
-  loading: boolean;
-  success: boolean;
-  error: any;
-  results: any;
-  details: any;
+  departments: Loadable.Loadable<any>;
+  details: Loadable.Loadable<any>;
 }
 
+export const deptsAdapter = createEntityAdapter<any>({
+  selectId: x => x.dept_name
+});
+
+export const detailsAdapter = createEntityAdapter<any>({
+  selectId: x => x.num
+});
+
 export const initialState: State = {
-  loading: false,
-  success: false,
-  error: null,
-  results: [],
-  details: []
+  departments: Loadable.initLoadable(deptsAdapter),
+  details: Loadable.initLoadable(detailsAdapter)
 };
 
-export function departmentsReducer(
+export function detailsReducer(
+  state: Loadable.Loadable<any>,
+  action: Dashboard.ActionsUnion
+): Loadable.Loadable<any> {
+  return loadableBasicReducer(
+    state,
+    action,
+    Dashboard.ActionTypes.loadDetailsDataSuccess,
+    Dashboard.ActionTypes.loadDetailsDataError,
+    Dashboard.ActionTypes.loadDetailsData,
+    detailsAdapter,
+    Dashboard.ActionTypes.loadDepartmentsData
+  );
+}
+
+export function departmentDataReducer(
+  state: Loadable.Loadable<any>,
+  action: Dashboard.ActionsUnion
+): Loadable.Loadable<any> {
+  return loadableBasicReducer(
+    state,
+    action,
+    Dashboard.ActionTypes.loadDepartmentsDataSuccess,
+    Dashboard.ActionTypes.loadDepartmentsDataError,
+    Dashboard.ActionTypes.loadDepartmentsData,
+    deptsAdapter
+  );
+}
+
+export function departmentsContainerReducer(
   state: State = initialState,
   action: Dashboard.ActionsUnion
 ): State {
-  console.log(action.type);
-  switch (action.type) {
-    case Dashboard.ActionTypes.loadDepartmentsData: {
-      return {
-        ...state,
-        loading: true
-      };
-    }
-
-    case Dashboard.ActionTypes.loadDepartmentsDataError: {
-      return {
-        ...state,
-        loading: false,
-        error: action.error
-      };
-    }
-
-    case Dashboard.ActionTypes.loadDepartmentsDataSuccess: {
-      console.log(action.results);
-
-      const newState = {
-        ...state,
-        loading: false,
-        error: null,
-        results: [...action.results]
-      };
-
-      console.log(newState);
-
-      return newState;
-    }
-
-    case Dashboard.ActionTypes.loadDetailsData: {
-      return {
-        ...state,
-        loading: true
-      };
-    }
-
-    case Dashboard.ActionTypes.loadDetailsDataSuccess: {
-      return {
-        ...state,
-        loading: false,
-        details: action.payload
-      };
-    }
-
-    case Dashboard.ActionTypes.loadDetailsDataError: {
-      return {
-        ...state,
-        loading: false,
-        details: null,
-        error: action.error
-      };
-    }
-
-    default: {
-      return state;
-    }
-  }
+  return {
+    departments: departmentDataReducer(state.departments, action),
+    details: detailsReducer(state.details, action)
+  };
 }

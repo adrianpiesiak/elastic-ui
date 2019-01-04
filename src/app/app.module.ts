@@ -18,12 +18,14 @@ import {
   MatInputModule,
   MatProgressSpinnerModule,
   MatTableModule,
-  MatGridListModule
+  MatGridListModule,
+  MatCardModule
 } from '@angular/material';
 
 import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { StoreModule } from '@ngrx/store';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import * as DepartmentStore from './store/departments-store';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -35,6 +37,7 @@ import { containers } from './containers';
 import { DepartmentListComponent } from './components/department-list/department-list.component';
 import { EmployeesListComponent } from './components/employees-list/employees-list.component';
 import { EffectsModule } from '@ngrx/effects';
+import { EmployeesStoreModule } from './store/employees/employees-store.module';
 
 @NgModule({
   declarations: [
@@ -59,13 +62,20 @@ import { EffectsModule } from '@ngrx/effects';
     MatListModule,
     MatAutocompleteModule,
     MatProgressSpinnerModule,
+    MatCardModule,
     MatTableModule,
     MatGridListModule,
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    StoreModule.forRoot({ departments: DepartmentStore.departmentsReducer }),
-    EffectsModule.forRoot([DepartmentStore.Effects])
+    StoreModule.forRoot({
+      departments: DepartmentStore.departmentsContainerReducer
+    }),
+    EffectsModule.forRoot([DepartmentStore.Effects]),
+    EmployeesStoreModule,
+    StoreDevtoolsModule.instrument({
+      maxAge: 10
+    })
   ],
   providers: [
     EmployeesService,

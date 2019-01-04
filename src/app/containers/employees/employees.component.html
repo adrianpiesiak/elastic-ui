@@ -12,17 +12,22 @@
   <form [formGroup]="searchForm">
     <div class="row mt-2">
       <mat-form-field class="col">
+        <mat-label></mat-label>
         <input
           matInput
           [matAutocomplete]="auto"
           type="text"
           formControlName="name"
+          placeholder="Select employee"
         />
         <mat-autocomplete
           #auto="matAutocomplete"
           [displayWith]="selectedUserFn"
         >
-          <mat-option *ngFor="let option of options" [value]="option">
+          <mat-option
+            *ngFor="let option of (options$ | async)"
+            [value]="option"
+          >
             <div [innerHTML]="getEmployeeNameAndSurname(option)"></div>
           </mat-option>
         </mat-autocomplete>
@@ -38,10 +43,10 @@
       </div>
     </div>
 
-    <div class="row" [ngSwitch]="loading">
+    <div class="row" [ngSwitch]="employmentsLoading$ | async">
       <app-employment-list
         *ngSwitchCase="false"
-        [employments]="employments"
+        [employments]="employments$ | async"
       ></app-employment-list>
       <mat-spinner *ngSwitchCase="true" style="margin: auto"></mat-spinner>
     </div>

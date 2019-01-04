@@ -22,6 +22,9 @@ export class EmployeesService {
           sort: [
             {
               'last_name.keyword': 'asc'
+            },
+            {
+              'first_name.keyword': 'asc'
             }
           ]
         }

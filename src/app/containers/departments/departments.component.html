@@ -1,9 +1,19 @@
 <div>
-  <app-department-list
-    [departments]="departments$ | async"
-  ></app-department-list>
+  <mat-card class="mt-4">
+    <mat-card-title> Departments </mat-card-title>
+    <mat-card-content>
+      <app-department-list
+        [departments]="departments$ | async"
+      ></app-department-list>
+      <mat-spinner *ngIf="(departentsLoading$ | async)"></mat-spinner>
+    </mat-card-content>
+  </mat-card>
+  <mat-card class="mt-4">
+    <mat-card-title>Employees</mat-card-title>
+    <mat-card-content>
+      <mat-spinner *ngIf="(detailsLoading$ | async)"></mat-spinner>
 
-  <h1 *ngIf="(loading$ | async)">LOADING</h1>
-
-  <app-employees-list [employees]="employees$ | async"></app-employees-list>
+      <app-employees-list [employees]="employees$ | async"></app-employees-list>
+    </mat-card-content>
+  </mat-card>
 </div>

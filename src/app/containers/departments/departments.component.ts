@@ -4,7 +4,13 @@ import { DepartmentListComponent } from 'src/app/components/department-list/depa
 
 import { Store, select } from '@ngrx/store';
 import * as DepartmentStore from './../../store/departments-store';
-import { selectDepartmentsResults, selectDetails } from './../../store';
+import {
+  selectDepartmentsResults,
+  selectDetails,
+  selectDepartmentsLoading,
+  selectDetailsLoading,
+  selectDepartmentsLoaded
+} from './../../store/departments-store';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -16,7 +22,9 @@ export class DepartmentsComponent implements OnInit {
   @ViewChild(DepartmentListComponent)
   private deptsList: DepartmentListComponent;
   departments$: Observable<any>;
-  loading$: Observable<boolean>;
+  departmentsLoaded$: Observable<boolean>;
+  departentsLoading$: Observable<boolean>;
+  detailsLoading$: Observable<boolean>;
   employees$: Observable<any>;
   constructor(
     private dataService: EmployeesService,
@@ -25,10 +33,16 @@ export class DepartmentsComponent implements OnInit {
 
   ngOnInit() {
     this.departments$ = this.store.select(selectDepartmentsResults);
-    this.loading$ = this.store.select(state => state.loading);
+    this.departentsLoading$ = this.store.select(selectDepartmentsLoading);
+    this.detailsLoading$ = this.store.select(selectDetailsLoading);
     this.employees$ = this.store.select(selectDetails);
 
-    this.store.dispatch(new DepartmentStore.LoadDepartmentsData());
+    this.departmentsLoaded$ = this.store.select(selectDepartmentsLoaded);
+    this.departmentsLoaded$.subscribe(x => {
+      if (!x) {
+        this.store.dispatch(new DepartmentStore.LoadDepartmentsData());
+      }
+    });
 
     // this.dataService
     //   .getDepartmentsAgregatedData()

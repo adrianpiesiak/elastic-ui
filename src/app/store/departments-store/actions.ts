@@ -1,4 +1,4 @@
-import { Action } from '@ngrx/store';
+import { RequestAction, ResultAction, ErrorAction } from './../loadable';
 
 export enum ActionTypes {
   loadDepartmentsData = '[DEPARTMENTS] LOAD',
@@ -9,11 +9,11 @@ export enum ActionTypes {
   loadDetailsDataError = '[DEPARTMENTS] DETAILS LOAD ERROR'
 }
 
-export class LoadDepartmentsData implements Action {
+export class LoadDepartmentsData implements RequestAction<any> {
   readonly type = ActionTypes.loadDepartmentsData;
 }
 
-export class LoadDepartmentsDataSuccess implements Action {
+export class LoadDepartmentsDataSuccess implements ResultAction<any> {
   readonly type = ActionTypes.loadDepartmentsDataSuccess;
   readonly results: any;
   constructor(results: any) {
@@ -21,7 +21,7 @@ export class LoadDepartmentsDataSuccess implements Action {
   }
 }
 
-export class LoadDepartmentsDataError implements Action {
+export class LoadDepartmentsDataError implements ErrorAction<any> {
   readonly type = ActionTypes.loadDepartmentsDataError;
   readonly error: any;
   constructor(error: any) {
@@ -29,23 +29,23 @@ export class LoadDepartmentsDataError implements Action {
   }
 }
 
-export class LoadDetailsData implements Action {
+export class LoadDetailsData implements RequestAction<string> {
   readonly type = ActionTypes.loadDetailsData;
-  readonly deptName: string;
+  readonly params: string;
   constructor(deptName: string) {
-    this.deptName = deptName;
+    this.params = deptName;
   }
 }
 
-export class LoadDetailsDataSuccess implements Action {
+export class LoadDetailsDataSuccess implements ResultAction<any> {
   readonly type = ActionTypes.loadDetailsDataSuccess;
-  readonly payload: any;
+  readonly results: any;
   constructor(payload: any) {
-    this.payload = payload;
+    this.results = payload;
   }
 }
 
-export class LoadDetailsDataError implements Action {
+export class LoadDetailsDataError implements ErrorAction<any> {
   readonly type = ActionTypes.loadDetailsDataError;
   readonly error: any;
   constructor(error: any) {
